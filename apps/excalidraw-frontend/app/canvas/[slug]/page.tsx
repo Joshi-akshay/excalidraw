@@ -6,12 +6,12 @@ import { Topbar } from "@/app/components/topBar";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export type Tool = "circle" | "rect" | "pencil";
+export type Tool = "move" | "pencil" | "rect" | "circle" | "line" | "arrow" | "diamond" | "eraser";
 
 export default function canvas() {
-    const [selectedTool, setSelectedTool] = useState<Tool>("pencil");
+    const [selectedTool, setSelectedTool] = useState<Tool>("move");
     const params = useParams();
-    const slug = params.slug as string;
+    const slug = params.slug as unknown as number;
     
     return (
         <div>

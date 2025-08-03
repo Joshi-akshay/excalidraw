@@ -71,23 +71,61 @@ wss.on('connection', function connection(ws, request) {
       const roomId = parseData.roomId;
       const message = parseData.message;
 
-      await prismaClient.chat.create({
-        data: {
-          roomId,
-          message,
-          userId
-        }
-      })
+      if (parseData.action === "update") {
+        await prismaClient.chat.update({
+          where: { id: parseData.id },
+          data: { message }
+        });
 
-      users.forEach(user => {
-        if (user.rooms.includes(roomId)) {
-          user.ws.send(JSON.stringify({
-            type: "chat",
-            message: message,
-            roomId
-          }))
-        }
-      })
+          users.forEach(user => {
+            if (user.rooms.includes(roomId) && user.userId !== userId) {
+              user.ws.send(JSON.stringify({
+                type: "chat",
+                action: "update",
+                id: parseData.id,
+                message: message,
+                roomId
+              }))
+            }
+          })
+      } else if (parseData.action === "delete") {
+        await prismaClient.chat.delete({
+          where: { id: parseData.id }
+        });
+
+        users.forEach(user => {
+          if (user.rooms.includes(roomId) && user.userId !== userId) {
+            user.ws.send(JSON.stringify({
+              type: "chat",
+              action: "delete",
+              id: parseData.id,
+              roomId
+            }))
+          }
+        })
+      } else {
+        const chatMessage = await prismaClient.chat.create({
+          data: {
+            roomId: Number(roomId),
+            message,
+            userId
+          }
+        });
+
+        const parsedmessage = JSON.parse(message);
+        parsedmessage.id = chatMessage.id;
+        const updatedMessage = JSON.stringify(parsedmessage);
+
+        users.forEach(user => {
+          if (user.rooms.includes(roomId)) {
+            user.ws.send(JSON.stringify({
+              type: "chat",
+              message: updatedMessage,
+              roomId
+            }))
+          }
+        })
+      }
     }
   });
 

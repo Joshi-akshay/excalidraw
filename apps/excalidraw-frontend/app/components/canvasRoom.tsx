@@ -3,12 +3,11 @@
     import { useEffect, useRef, useState } from "react";
     import { useSocket } from "../hooks/useSocket";
     import { initDraw } from "../draw";
-    import { useRoomId } from "../hooks/useRoomId";
 import { Tool } from "../canvas/[slug]/page";
 import { Game } from "../draw/game";
 
     interface CanvasRoomProps {
-        slug: string;
+        slug: number;
         selectedTool: Tool;
     }
 
@@ -17,8 +16,10 @@ import { Game } from "../draw/game";
         const canvasRef = useRef<HTMLCanvasElement>(null);
         const toolRef = useRef<Tool>(props.selectedTool);
 
-        const {socket, loading} = useSocket();
-        const {roomId} = useRoomId(props.slug);
+        const { socket, loading } = useSocket();
+        // Use useRoomId to fetch the roomId from the slug
+        // const { roomId } = useRoomId(props.slug);
+        const roomId : number = props.slug;
         const [game, setGame] = useState<Game>();
 
         useEffect(() => {

@@ -13,8 +13,8 @@ interface ButtonProps {
 }
 
 const variantStyle = {
-    "Primary": "bg-purple-200 text-purple-500",
-    "Secondary": "bg-purple-600 text-white"
+    "Primary": "bg-gray-700 text-white border border-gray-600 hover:bg-gray-600",
+    "Secondary": "bg-gray-600 text-white border border-gray-500 hover:bg-gray-500"
 }
 
 const sizeStyle = {
